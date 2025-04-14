@@ -1,7 +1,7 @@
 /*************************************************************
  * ДЗ-2 Примитивная рекурсия (Вариант 2.10)
  *
- * Студент: Батычков Вячеслаав Геннадьевич, КТбо1-7
+ * Студент: Батычков Вячеслав Геннадьевич, КТбо1-7
  *
  * Программа: Реализует вычисление функции f(x1, x2),
  * полученной из базовых функций:
@@ -9,7 +9,7 @@
  *   h(x, y, z) = x + y
  * по схеме примитивной рекурсии:
  *   1) f(0, x2) = x2
- *   2) f(x1 + 1, x2) = h(x1, f(x1, x2), x2) = x1 + f(x1, x2)
+ *   2) f(x1 + 1, x2) = x1 + f(x1, x2)
  *
  * Аналитическая формула (для x1 ≥ 0):
  *   f(x1, x2) = x2 + (x1 * (x1 - 1)) / 2
@@ -19,19 +19,20 @@
 #include <iostream>
 #include <clocale>
 #include <windows.h>
+#include <string>
 
 using namespace std;
-
+ 
 // Примитивно-рекурсивная реализация функции F(n, x)
 // Ввод: шаг рекурсии и параметр
 // Вывод: занчение примитивно-рекурсивной функции
-int recurFunc(int, int);
-  
+int recurFunc(int x1, int x2, wstring &trace);
+ 
 // Аналитическая формула F(x1, x2) = x2 + (x1 * (x1 - 1)) / 2
 // Ввод: шаг и параметр
 // Вывод: значние по аналитической функции
-int analiticFunc(int, int);
-
+int analiticFunc(int n, int x);
+ 
 int main() {
     SetConsoleOutputCP(1251);
     SetConsoleCP(1251);
@@ -67,20 +68,21 @@ int main() {
 
         if (keepWorking && flag) {
             wcout << endl << L"--- Рекурсивное вычисление ---" << endl;
-            int recurResult = recurFunc(x1, x2);
+
+            wstring recursionTrace;
+            int recurResult = recurFunc(x1, x2, recursionTrace);
+            wcout << recursionTrace << endl;
 
             int analiticResult = analiticFunc(x1, x2);
-            wcout << endl << L"--- Сравнение с аналитической формулой ---" << endl;
-            wcout << L"f(" << x1 << L"," << x2 << L") по рекурсии = " 
+            wcout << L"--- Сравнение с аналитической формулой ---" << endl;
+            wcout << L"f(" << x1 << L"," << x2 << L") по рекурсии = "
                   << recurResult << endl;
-            wcout << L"f(" << x1 << L"," << x2 << L") по аналитической формуле = " 
+            wcout << L"f(" << x1 << L"," << x2 << L") по аналитической формуле = "
                   << analiticResult << endl;
-
-            (recurResult == analiticResult) ? wcout << L"Результаты совпадают!" : wcout << L"Результаты НЕ совпадают!";
-            wcout << endl;
-
+ 
+            (recurResult == analiticResult) ? wcout << L"Результаты совпадают!" << endl : wcout << L"Результаты НЕ совпадают!" << endl;
             wcout << endl << L"Повторить ввод? (y/n): ";
-            char again; cin >> again;
+            char again;  cin >> again;
             if (again == 'n' || again == 'N') {
                 wcout << L"Программа завершена." << endl;
                 keepWorking = false;
@@ -89,20 +91,20 @@ int main() {
     }
     return 0;
 }
-
-int recurFunc(int x1, int x2) {
+ 
+int recurFunc(int x1, int x2, wstring &trace) {
     int result;
     if (x1 == 0) {
-        wcout << L"f(0," << x2 << L") = " << x2 << endl;
         result = x2;
+        trace += L"f(0," + to_wstring(x2) + L") = " + to_wstring(result) + L"\n";
     } else {
-        int prev = recurFunc(x1 - 1, x2);
+        int prev = recurFunc(x1 - 1, x2, trace);
         result = (x1 - 1) + prev;
-        wcout << L"f(" << x1 << L"," << x2 << L") = h(" 
-              << (x1 - 1) << L", f(" << (x1 - 1) << L"," 
-              << x2 << L"), " << x2 << L") = h(" << (x1 - 1) 
-              << L"," << prev << L"," << x2 << L") = " 
-              << result << endl;
+        trace += L"f(" + to_wstring(x1) + L"," + to_wstring(x2) + L") = h(" 
+                + to_wstring(x1 - 1) + L", f(" + to_wstring(x1 - 1) + L"," 
+                + to_wstring(x2) + L"), " + to_wstring(x2) + L") = h(" 
+                + to_wstring(x1 - 1) + L"," + to_wstring(prev) + L"," 
+                + to_wstring(x2) + L") = " + to_wstring(result) + L"\n";
     }
     return result;
 }
@@ -111,3 +113,4 @@ int analiticFunc(int n, int x) {
     int result = x + (n * (n - 1)) / 2;
     return result;
 }
+ 
